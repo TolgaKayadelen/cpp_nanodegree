@@ -6,7 +6,6 @@
 #include <vector>
 #include <iomanip>
 #include <unordered_map>
-#include <assert.h>
 
 #include "linux_parser.h"
 
@@ -73,41 +72,38 @@ vector<int> LinuxParser::Pids() {
 
 // Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
-  string memtype, value;
+  string memtype, value, line;
   std::unordered_map <string, string> memory;
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
-    while (filestream >> memtype >> value) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      linestream >> memtype >> value;
       memory[memtype] = value;
     }
   }
   auto m = memory["MemTotal:"];
   auto n = memory["MemFree:"];
-  //float memtotal = stof(m);
-  //float memfree = stof(n);
-  //return (memtotal - memfree) / memtotal;
-  return 0.0;
+  return (stof(m) - stof(n)) / stof(m);
 }
 
 // Read and return the system uptime
 long LinuxParser::UpTime() {
+  string line, uptime, idle;
   std::ifstream filestream(kProcDirectory + kUpTimePath);
-  string line;
-  getline(filestream, line);
-  std::istringstream buffer(line);
-  std::istream_iterator<string> beg(buffer), end;
-  vector<string> values(beg, end);
-  return std::stoi(values[0]);
+  std::getline(filestream, line);
+  std::istringstream linestream(line);
+  linestream >> uptime >> idle;
+  return std::stoi(uptime);
 }
 
 // Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() {
-  vector<string> jiff = CpuUtilization();
-  long total_jiff = 0;
-  for (string j : jiff) {
-    total_jiff += atol(j.c_str());
+  long jiffies = 0;
+  for (string j : CpuUtilization()) {
+    jiffies += atol(j.c_str());
   }
-  return total_jiff;
+  return jiffies;
 }
 
 // TODO: Read and return the number of active jiffies for a PID
@@ -121,29 +117,19 @@ long LinuxParser::ActiveJiffies() {
 
 // Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
-  vector<string> jiff = CpuUtilization();
-  return atol(jiff[3].c_str());
+  return atol(CpuUtilization()[3].c_str());
   }
 
-// Read and return CPU utilization
+// Read and return System CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
-  string user, nice, system, idle, iowait, irq, softirq, steal;
-  string line;
+  string jiffy;
   vector<string> values{};
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
-    std::getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+    while (filestream >> jiffy) {
+      values.push_back(jiffy);
     }
-  values.push_back(user);
-  values.push_back(nice);
-  values.push_back(system);
-  values.push_back(idle);
-  values.push_back(iowait);
-  values.push_back(irq);
-  values.push_back(softirq);
-  values.push_back(steal);
+  }
   return values;
 }
 
@@ -185,28 +171,29 @@ int LinuxParser::RunningProcesses() {
 }
 
 float LinuxParser::CpuUtilization(int pid) {
-  string line;
-  string value;
-  float result;
-  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
-  getline(stream, line);
-  string str = line;
-  std::istringstream buf(str);
-  std::istream_iterator<string> beg(buf), end;
-  vector<string> values(beg, end);
-  // acquiring relevant times for calculation of active occupation of CPU for
-  // selected process
-  float utime = ProcessUpTime(pid);
-  float stime = stof(values[14]);
-  float cutime = stof(values[15]);
-  float cstime = stof(values[16]);
-  float starttime = stof(values[21]);
-  float uptime = UpTime();  // sys uptime
-  float freq = sysconf(_SC_CLK_TCK);
-  float total_time = utime + stime;// + cutime + cstime;
-  float seconds = uptime - (starttime / freq);
-  result = 100.0 * ((total_time / freq) / seconds);
-  return result;
+  string line, tmp;
+  float utime, stime, cutime, cstime, starttime, uptime, freq, total, seconds;
+  float proc_cpu;
+  vector<string> values{};
+  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    while (linestream >> tmp) {
+      values.push_back(tmp);
+    }
+  }
+  utime = ProcessUpTime(pid);
+  stime = stof(values[14]);
+  cutime = stof(values[15]);
+  cstime = stof(values[16]);
+  starttime = stof(values[21]);
+  uptime = UpTime();  // sys uptime
+  freq = sysconf(_SC_CLK_TCK);
+  total = utime + stime;// + cutime + cstime;
+  seconds = uptime - (starttime / freq);
+  proc_cpu = 100.0 * ((total / freq) / seconds);
+  return proc_cpu;
 }
 
 
