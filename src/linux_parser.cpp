@@ -170,9 +170,12 @@ int LinuxParser::RunningProcesses() {
   return std::atoi(running_processes.c_str());
 }
 
+// Cpu utilizatiob for process, based on stackoverflow answer in
+// stackoverflow.com/questions/16726779
 float LinuxParser::CpuUtilization(int pid) {
   string line, tmp;
-  float utime, stime, cutime, cstime, starttime, uptime, freq, total, seconds;
+  float sys_uptime;
+  float utime, stime, cutime, cstime, starttime, hertz, seconds, total_time;
   float proc_cpu;
   vector<string> values{};
   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
@@ -183,20 +186,22 @@ float LinuxParser::CpuUtilization(int pid) {
       values.push_back(tmp);
     }
   }
-  utime = ProcessUpTime(pid);
+  // get the required values.
+  sys_uptime = UpTime();
+  utime = stof(values[13]);
   stime = stof(values[14]);
   cutime = stof(values[15]);
   cstime = stof(values[16]);
   starttime = stof(values[21]);
-  uptime = UpTime();  // sys uptime
-  freq = sysconf(_SC_CLK_TCK);
-  total = utime + stime;// + cutime + cstime;
-  seconds = uptime - (starttime / freq);
-  proc_cpu = 100.0 * ((total / freq) / seconds);
+  hertz = sysconf(_SC_CLK_TCK);
+
+  // Calculate process cpu
+  total_time = utime + stime;
+  total_time = total_time + cutime + cstime;
+  seconds = sys_uptime - (starttime / hertz);
+  proc_cpu = 100.0 * ((total_time / hertz) / seconds);
   return proc_cpu;
 }
-
-
 
 // Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
