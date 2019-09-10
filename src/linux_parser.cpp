@@ -82,6 +82,7 @@ float LinuxParser::MemoryUtilization() {
       memory[memtype] = value;
     }
   }
+  filestream.close();
   auto m = memory["MemTotal:"];
   auto n = memory["MemFree:"];
   return (stof(m) - stof(n)) / stof(m);
@@ -94,6 +95,7 @@ long LinuxParser::UpTime() {
   std::getline(filestream, line);
   std::istringstream linestream(line);
   linestream >> uptime >> idle;
+  filestream.close();
   return std::stoi(uptime);
 }
 
@@ -130,6 +132,7 @@ vector<string> LinuxParser::CpuUtilization() {
       values.push_back(jiffy);
     }
   }
+  filestream.close();
   return values;
 }
 
@@ -149,6 +152,7 @@ int LinuxParser::TotalProcesses() {
       } // inner while
     } // outer while
   } // outer if
+  filestream.close();
   return std::atoi(total_processes.c_str());
  }
 
@@ -167,6 +171,7 @@ int LinuxParser::RunningProcesses() {
       } // inner while
     } // outer while
   } // outer if
+  filestream.close();
   return std::atoi(running_processes.c_str());
 }
 
@@ -186,6 +191,7 @@ float LinuxParser::CpuUtilization(int pid) {
       values.push_back(tmp);
     }
   }
+  filestream.close();
   // get the required values.
   sys_uptime = UpTime();
   utime = stof(values[13]);
@@ -199,7 +205,7 @@ float LinuxParser::CpuUtilization(int pid) {
   total_time = utime + stime;
   total_time = total_time + cutime + cstime;
   seconds = sys_uptime - (starttime / hertz);
-  proc_cpu = 100.0 * ((total_time / hertz) / seconds);
+  proc_cpu = (total_time / hertz) / seconds;
   return proc_cpu;
 }
 
@@ -210,6 +216,7 @@ string LinuxParser::Command(int pid) {
   if (filestream.is_open()) {
     std::getline(filestream, cmdline);
   }
+  filestream.close();
   return cmdline;
 }
 
@@ -230,6 +237,7 @@ string LinuxParser::Ram(int pid) {
       }
     }
   }
+  filestream.close();
   return to_string(ram / 1024);
 }
 
@@ -249,6 +257,7 @@ string LinuxParser::Uid(int pid) {
       }
     }
   }
+  filestream.close();
   return uid;
 }
 
@@ -267,6 +276,7 @@ string LinuxParser::User(int pid) {
       }
     }
   }
+  filestream.close();
    return user;
  }
 
@@ -274,10 +284,11 @@ string LinuxParser::User(int pid) {
  long int LinuxParser::ProcessUpTime(int pid) {
    string line;
    string value;
-   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
-   std::getline(stream, line);
+   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+   std::getline(filestream, line);
    std::istringstream linestream(line);
    std::istream_iterator<string> beg(linestream), end;
    vector<string> values(beg, end);
+   filestream.close();
    return float(stof(values[13]) / sysconf(_SC_CLK_TCK));
 }

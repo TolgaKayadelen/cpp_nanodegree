@@ -29,7 +29,7 @@ float Process::CpuUtilization() const {
 
 // accessor returns the command that generated this process
 string Process::Command() {
-  return cmd_; }
+  return cmd_.substr(0,27).append("..."); }
 
 // accessor returns the  process's memory utilization
 string Process::Ram() {
