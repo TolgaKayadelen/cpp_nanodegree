@@ -1,0 +1,3 @@
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-SystemMonitor/build/CMakeFiles/rebuild_cache.dir
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-SystemMonitor/build/CMakeFiles/monitor.dir
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-SystemMonitor/build/CMakeFiles/edit_cache.dir

@@ -1,0 +1,5 @@
+monitor
+a.out
+settings.json
+*.o
+*.json
