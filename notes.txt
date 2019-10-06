@@ -1,4 +1,0 @@
-You need to compile using c++17 version. 
-
-Use 
-g++ -std=c++17 filename
