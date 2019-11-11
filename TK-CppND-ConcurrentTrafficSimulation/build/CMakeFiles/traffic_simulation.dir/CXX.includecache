@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/src/TrafficLight.cpp
+iostream
+-
+random
+-
+TrafficLight.h
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/src/TrafficLight.h
+chrono
+-
+stdlib.h
+-
+time.h
+-
+
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/src/TrafficLight.h
+mutex
+-
+deque
+-
+condition_variable
+-
+TrafficObject.h
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/src/TrafficObject.h
+
+/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/src/TrafficObject.h
+vector
+-
+thread
+-
+mutex
+-
+
