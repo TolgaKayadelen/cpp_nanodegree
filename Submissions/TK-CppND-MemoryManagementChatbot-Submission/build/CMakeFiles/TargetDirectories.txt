@@ -1,0 +1,3 @@
+/home/tolga/Desktop/C++_NanoDegree/Submissions/TK-CppND-MemoryManagementChatbot-Submission/build/CMakeFiles/rebuild_cache.dir
+/home/tolga/Desktop/C++_NanoDegree/Submissions/TK-CppND-MemoryManagementChatbot-Submission/build/CMakeFiles/membot.dir
+/home/tolga/Desktop/C++_NanoDegree/Submissions/TK-CppND-MemoryManagementChatbot-Submission/build/CMakeFiles/edit_cache.dir
