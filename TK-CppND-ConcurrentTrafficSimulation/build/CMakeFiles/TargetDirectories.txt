@@ -1,3 +1,0 @@
-/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/build/CMakeFiles/rebuild_cache.dir
-/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/build/CMakeFiles/traffic_simulation.dir
-/home/tolga/Desktop/C++_NanoDegree/TK-CppND-ConcurrentTrafficSimulation/build/CMakeFiles/edit_cache.dir
